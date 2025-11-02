@@ -1,0 +1,676 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: services.service.elestio.crossplane.io
+spec:
+  group: service.elestio.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    kind: Service
+    listKind: ServiceList
+    plural: services
+    singular: service
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Service is the Schema for the Services API. Elestio Service resource
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ServiceSpec defines the desired state of Service
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: |-
+                  DeletionPolicy specifies what will happen to the underlying external
+                  when this managed resource is deleted - either "Delete" or "Orphan" the
+                  external resource.
+                  This field is planned to be deprecated in favor of the ManagementPolicies
+                  field in a future release. Currently, both could be set independently and
+                  non-default values would be honored if the feature flag is enabled.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  adminEmail:
+                    description: Service admin email. Requires replace to change it.
+                    type: string
+                  alertsEnabled:
+                    description: Service alerts state. **Default** `true`.
+                    type: boolean
+                  appAutoUpdatesEnabled:
+                    description: Service app auto update state. **Default** `true`.
+                    type: boolean
+                  backupsEnabled:
+                    description: Service backups state.  Requires a support_level
+                      higher than `level1`. **Default** `false`.
+                    type: boolean
+                  customDomainNames:
+                    description: Indicate the list of domains for which you want to
+                      activate HTTPS / TLS / SSL. You will also need to create a DNS
+                      entry on your domain name (from your registrar control panel)
+                      pointing to your service. You must create a CNAME record pointing
+                      to the service `cname` value. Alternatively, you can create
+                      an A record pointing to the service `ipv4` value.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: set
+                  datacenter:
+                    description: The datacenter of the provider where the service
+                      will be hosted. You can look for available datacenters in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.
+                    type: string
+                  defaultPassword:
+                    description: Set the default password used by you services at
+                      **CREATION** time.</br>The password can only contain alphanumeric
+                      characters or hyphens `-`. Require at least 10 characters, one
+                      uppercase letter, one lowercase letter and one number.</br>If
+                      you don't set a password, a random one will be generated by
+                      the API.</br>This attribute will **not be synced** after the
+                      creation. Use `admin.password` or `database_admin.password`
+                      to get the current password after the creation.
+                    type: string
+                  firewallEnabled:
+                    description: Service firewall state. **Default** `false`.
+                    type: boolean
+                  keepBackupsOnDeleteEnabled:
+                    description: Creates a backup and keeps all existing ones after
+                      deleting the service. If the project is deleted, the backups
+                      will be lost. **Default** `true`.
+                    type: boolean
+                  projectId:
+                    description: Identifier of the project in which the service is.
+                      Requires replace to change it.
+                    type: string
+                  providerName:
+                    description: 'The name of the provider to use to host the service
+                      (must be lowercase). Common providers: `hetzner`, `do`, `lightsail`,
+                      `linode`, `vultr`, `scaleway`, `netcup`. You can look for available
+                      provider names in the [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.'
+                    type: string
+                  remoteBackupsEnabled:
+                    description: Service remote backups state. **Default** `true`.
+                    type: boolean
+                  serverName:
+                    description: Service server name. Max length 60 characters, and
+                      can only include lowercase letters a-z, digits 0-9, and hyphens
+                      (-). Must be unique within the project. Requires replace to
+                      change it.
+                    type: string
+                  serverType:
+                    description: The server type defines the power and memory allocated
+                      to the service. Each `provider_name` has a list of available
+                      server types. You can look for available server types in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      You can only upgrade it, not downgrade.<br/>Requires replace
+                      to update the server type with the provider `scale_way`.
+                    type: string
+                  supportLevel:
+                    description: Service support level. Available support levels are
+                      `level1`, `level2` and `level3`. You can look for their advantages
+                      in the [pricing documentation](https://elest.io/pricing). It
+                      is recommended to use the web dashboard to change it without
+                      replacing the service.
+                    type: string
+                  systemAutoUpdatesEnabled:
+                    description: Service system auto update state. **Default** `true`.
+                    type: boolean
+                  systemAutoUpdatesSecurityPatchesOnlyEnabled:
+                    description: Service system auto update security patches only
+                      state. **Default** `false`.
+                    type: boolean
+                  templateId:
+                    description: The template identifier defines the software used.
+                      You can look for available template ids in the [templates documentation](https://elest.io/fully-managed-services).
+                    type: number
+                  version:
+                    description: This is the version of the software used as service.
+                    type: string
+                type: object
+              initProvider:
+                description: |-
+                  THIS IS A BETA FIELD. It will be honored
+                  unless the Management Policies feature flag is disabled.
+                  InitProvider holds the same fields as ForProvider, with the exception
+                  of Identifier and other resource reference fields. The fields that are
+                  in InitProvider are merged into ForProvider when the resource is created.
+                  The same fields are also added to the terraform ignore_changes hook, to
+                  avoid updating them after creation. This is useful for fields that are
+                  required on creation, but we do not desire to update them after creation,
+                  for example because of an external controller is managing them, like an
+                  autoscaler.
+                properties:
+                  adminEmail:
+                    description: Service admin email. Requires replace to change it.
+                    type: string
+                  alertsEnabled:
+                    description: Service alerts state. **Default** `true`.
+                    type: boolean
+                  appAutoUpdatesEnabled:
+                    description: Service app auto update state. **Default** `true`.
+                    type: boolean
+                  backupsEnabled:
+                    description: Service backups state.  Requires a support_level
+                      higher than `level1`. **Default** `false`.
+                    type: boolean
+                  customDomainNames:
+                    description: Indicate the list of domains for which you want to
+                      activate HTTPS / TLS / SSL. You will also need to create a DNS
+                      entry on your domain name (from your registrar control panel)
+                      pointing to your service. You must create a CNAME record pointing
+                      to the service `cname` value. Alternatively, you can create
+                      an A record pointing to the service `ipv4` value.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: set
+                  datacenter:
+                    description: The datacenter of the provider where the service
+                      will be hosted. You can look for available datacenters in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.
+                    type: string
+                  defaultPassword:
+                    description: Set the default password used by you services at
+                      **CREATION** time.</br>The password can only contain alphanumeric
+                      characters or hyphens `-`. Require at least 10 characters, one
+                      uppercase letter, one lowercase letter and one number.</br>If
+                      you don't set a password, a random one will be generated by
+                      the API.</br>This attribute will **not be synced** after the
+                      creation. Use `admin.password` or `database_admin.password`
+                      to get the current password after the creation.
+                    type: string
+                  firewallEnabled:
+                    description: Service firewall state. **Default** `false`.
+                    type: boolean
+                  keepBackupsOnDeleteEnabled:
+                    description: Creates a backup and keeps all existing ones after
+                      deleting the service. If the project is deleted, the backups
+                      will be lost. **Default** `true`.
+                    type: boolean
+                  projectId:
+                    description: Identifier of the project in which the service is.
+                      Requires replace to change it.
+                    type: string
+                  providerName:
+                    description: 'The name of the provider to use to host the service
+                      (must be lowercase). Common providers: `hetzner`, `do`, `lightsail`,
+                      `linode`, `vultr`, `scaleway`, `netcup`. You can look for available
+                      provider names in the [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.'
+                    type: string
+                  remoteBackupsEnabled:
+                    description: Service remote backups state. **Default** `true`.
+                    type: boolean
+                  serverName:
+                    description: Service server name. Max length 60 characters, and
+                      can only include lowercase letters a-z, digits 0-9, and hyphens
+                      (-). Must be unique within the project. Requires replace to
+                      change it.
+                    type: string
+                  serverType:
+                    description: The server type defines the power and memory allocated
+                      to the service. Each `provider_name` has a list of available
+                      server types. You can look for available server types in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      You can only upgrade it, not downgrade.<br/>Requires replace
+                      to update the server type with the provider `scale_way`.
+                    type: string
+                  supportLevel:
+                    description: Service support level. Available support levels are
+                      `level1`, `level2` and `level3`. You can look for their advantages
+                      in the [pricing documentation](https://elest.io/pricing). It
+                      is recommended to use the web dashboard to change it without
+                      replacing the service.
+                    type: string
+                  systemAutoUpdatesEnabled:
+                    description: Service system auto update state. **Default** `true`.
+                    type: boolean
+                  systemAutoUpdatesSecurityPatchesOnlyEnabled:
+                    description: Service system auto update security patches only
+                      state. **Default** `false`.
+                    type: boolean
+                  templateId:
+                    description: The template identifier defines the software used.
+                      You can look for available template ids in the [templates documentation](https://elest.io/fully-managed-services).
+                    type: number
+                  version:
+                    description: This is the version of the software used as service.
+                    type: string
+                type: object
+              managementPolicies:
+                default:
+                - '*'
+                description: |-
+                  THIS IS A BETA FIELD. It is on by default but can be opted out
+                  through a Crossplane feature flag.
+                  ManagementPolicies specify the array of actions Crossplane is allowed to
+                  take on the managed and external resources.
+                  This field is planned to replace the DeletionPolicy field in a future
+                  release. Currently, both could be set independently and non-default
+                  values would be honored if the feature flag is enabled. If both are
+                  custom, the DeletionPolicy field will be ignored.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                  and this one: https://github.com/crossplane/crossplane/blob/444267e84783136daa93568b364a5f01228cacbe/design/one-pager-ignore-changes.md
+                items:
+                  description: |-
+                    A ManagementAction represents an action that the Crossplane controllers
+                    can take on an external resource.
+                  enum:
+                  - Observe
+                  - Create
+                  - Update
+                  - Delete
+                  - LateInitialize
+                  - '*'
+                  type: string
+                type: array
+              providerConfigRef:
+                default:
+                  name: default
+                description: |-
+                  ProviderConfigReference specifies how the provider that will be used to
+                  create, observe, update, and delete this managed resource should be
+                  configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: |-
+                          Resolution specifies whether resolution of this reference is required.
+                          The default is 'Required', which means the reconcile will fail if the
+                          reference cannot be resolved. 'Optional' means this reference will be
+                          a no-op if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: |-
+                          Resolve specifies when this reference should be resolved. The default
+                          is 'IfNotPresent', which will attempt to resolve the reference only when
+                          the corresponding field is not present. Use 'Always' to resolve the
+                          reference on every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: |-
+                  WriteConnectionSecretToReference specifies the namespace and name of a
+                  Secret to which any connection details for this managed resource should
+                  be written. Connection details frequently include the endpoint, username,
+                  and password required to connect to the managed resource.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+            x-kubernetes-validations:
+            - message: spec.forProvider.datacenter is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.datacenter)
+                || (has(self.initProvider) && has(self.initProvider.datacenter))'
+            - message: spec.forProvider.projectId is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.projectId)
+                || (has(self.initProvider) && has(self.initProvider.projectId))'
+            - message: spec.forProvider.providerName is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.providerName)
+                || (has(self.initProvider) && has(self.initProvider.providerName))'
+            - message: spec.forProvider.serverType is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.serverType)
+                || (has(self.initProvider) && has(self.initProvider.serverType))'
+            - message: spec.forProvider.templateId is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.templateId)
+                || (has(self.initProvider) && has(self.initProvider.templateId))'
+            - message: spec.forProvider.version is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.version)
+                || (has(self.initProvider) && has(self.initProvider.version))'
+          status:
+            description: ServiceStatus defines the observed state of Service.
+            properties:
+              atProvider:
+                properties:
+                  adminEmail:
+                    description: Service admin email. Requires replace to change it.
+                    type: string
+                  adminUser:
+                    description: Service admin user.
+                    type: string
+                  alertsEnabled:
+                    description: Service alerts state. **Default** `true`.
+                    type: boolean
+                  appAutoUpdatesDayOfWeek:
+                    description: Service app auto update day of week. `0 = Sunday`,
+                      `1 = Monday`, ..., `6 = Saturday`, `-1 = Everyday`
+                    type: number
+                  appAutoUpdatesEnabled:
+                    description: Service app auto update state. **Default** `true`.
+                    type: boolean
+                  appAutoUpdatesHour:
+                    description: Service app auto update hour.
+                    type: number
+                  appAutoUpdatesMinute:
+                    description: Service app auto update minute.
+                    type: number
+                  backupsEnabled:
+                    description: Service backups state.  Requires a support_level
+                      higher than `level1`. **Default** `false`.
+                    type: boolean
+                  category:
+                    description: Service category.
+                    type: string
+                  city:
+                    description: Service city.
+                    type: string
+                  cname:
+                    description: Service CNAME.
+                    type: string
+                  cores:
+                    description: Service cores.
+                    type: number
+                  country:
+                    description: Service country.
+                    type: string
+                  createdAt:
+                    description: Service creation date.
+                    type: string
+                  creatorName:
+                    description: Service creator name.
+                    type: string
+                  customDomainNames:
+                    description: Indicate the list of domains for which you want to
+                      activate HTTPS / TLS / SSL. You will also need to create a DNS
+                      entry on your domain name (from your registrar control panel)
+                      pointing to your service. You must create a CNAME record pointing
+                      to the service `cname` value. Alternatively, you can create
+                      an A record pointing to the service `ipv4` value.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: set
+                  datacenter:
+                    description: The datacenter of the provider where the service
+                      will be hosted. You can look for available datacenters in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.
+                    type: string
+                  defaultPassword:
+                    description: Set the default password used by you services at
+                      **CREATION** time.</br>The password can only contain alphanumeric
+                      characters or hyphens `-`. Require at least 10 characters, one
+                      uppercase letter, one lowercase letter and one number.</br>If
+                      you don't set a password, a random one will be generated by
+                      the API.</br>This attribute will **not be synced** after the
+                      creation. Use `admin.password` or `database_admin.password`
+                      to get the current password after the creation.
+                    type: string
+                  deploymentEndedAt:
+                    description: Service deployment endedAt date.
+                    type: string
+                  deploymentStartedAt:
+                    description: Service deployment startedAt date.
+                    type: string
+                  deploymentStatus:
+                    description: Service deployement status.
+                    type: string
+                  elestioId:
+                    description: Service identifier unique and handled by Elestio.
+                    type: number
+                  externalBackupsEnabled:
+                    description: Service external backups state. **Default** `false`.
+                    type: boolean
+                  externalBackupsRetainDayOfWeek:
+                    description: Service external backups retain day of week. `0 =
+                      Sunday`, `1 = Monday`, ..., `6 = Saturday`, `-1 = Everyday`
+                    type: number
+                  externalBackupsUpdateDayOfWeek:
+                    description: Service external backups update day. `0 = Sunday`,
+                      `1 = Monday`, ..., `6 = Saturday`, `-1 = Everyday`
+                    type: number
+                  externalBackupsUpdateHour:
+                    description: Service external backups update hour.
+                    type: number
+                  externalBackupsUpdateMinute:
+                    description: Service external backups update minute.
+                    type: number
+                  externalBackupsUpdateType:
+                    description: Service external backups update type.
+                    type: string
+                  firewallEnabled:
+                    description: Service firewall state. **Default** `false`.
+                    type: boolean
+                  firewallId:
+                    description: Service firewall id.
+                    type: string
+                  firewallPorts:
+                    description: Service firewall ports.
+                    type: string
+                  globalIp:
+                    description: Service global IP.
+                    type: string
+                  id:
+                    type: string
+                  ipv4:
+                    description: Service IPv4.
+                    type: string
+                  ipv6:
+                    description: Service IPv6.
+                    type: string
+                  keepBackupsOnDeleteEnabled:
+                    description: Creates a backup and keeps all existing ones after
+                      deleting the service. If the project is deleted, the backups
+                      will be lost. **Default** `true`.
+                    type: boolean
+                  lastUpdated:
+                    type: string
+                  pricePerHour:
+                    description: Service price per hour.
+                    type: string
+                  projectId:
+                    description: Identifier of the project in which the service is.
+                      Requires replace to change it.
+                    type: string
+                  providerName:
+                    description: 'The name of the provider to use to host the service
+                      (must be lowercase). Common providers: `hetzner`, `do`, `lightsail`,
+                      `linode`, `vultr`, `scaleway`, `netcup`. You can look for available
+                      provider names in the [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      Requires replace to change it.'
+                    type: string
+                  ramSizeGb:
+                    description: Service ram size in GB.
+                    type: string
+                  remoteBackupsEnabled:
+                    description: Service remote backups state. **Default** `true`.
+                    type: boolean
+                  rootAppPath:
+                    description: Service root app path.
+                    type: string
+                  serverName:
+                    description: Service server name. Max length 60 characters, and
+                      can only include lowercase letters a-z, digits 0-9, and hyphens
+                      (-). Must be unique within the project. Requires replace to
+                      change it.
+                    type: string
+                  serverType:
+                    description: The server type defines the power and memory allocated
+                      to the service. Each `provider_name` has a list of available
+                      server types. You can look for available server types in the
+                      [providers documentation](https://registry.io/providers/elestio/elestio/latest/docs/guides/providers_datacenters_server_types).
+                      You can only upgrade it, not downgrade.<br/>Requires replace
+                      to update the server type with the provider `scale_way`.
+                    type: string
+                  status:
+                    description: Service status.
+                    type: string
+                  storageSizeGb:
+                    description: Service storage size in GB.
+                    type: number
+                  supportLevel:
+                    description: Service support level. Available support levels are
+                      `level1`, `level2` and `level3`. You can look for their advantages
+                      in the [pricing documentation](https://elest.io/pricing). It
+                      is recommended to use the web dashboard to change it without
+                      replacing the service.
+                    type: string
+                  systemAutoUpdatesEnabled:
+                    description: Service system auto update state. **Default** `true`.
+                    type: boolean
+                  systemAutoUpdatesRebootDayOfWeek:
+                    description: Service system auto update reboot day of week. `0
+                      = Sunday`, `1 = Monday`, ..., `6 = Saturday`, `-1 = Everyday`
+                    type: number
+                  systemAutoUpdatesRebootHour:
+                    description: Service system auto update reboot hour.
+                    type: number
+                  systemAutoUpdatesRebootMinute:
+                    description: Service system auto update reboot minute.
+                    type: number
+                  systemAutoUpdatesSecurityPatchesOnlyEnabled:
+                    description: Service system auto update security patches only
+                      state. **Default** `false`.
+                    type: boolean
+                  templateId:
+                    description: The template identifier defines the software used.
+                      You can look for available template ids in the [templates documentation](https://elest.io/fully-managed-services).
+                    type: number
+                  trafficIncluded:
+                    description: Service traffic included.
+                    type: number
+                  trafficIncoming:
+                    description: Service traffic incoming.
+                    type: number
+                  trafficOutgoing:
+                    description: Service traffic outgoing.
+                    type: number
+                  version:
+                    description: This is the version of the software used as service.
+                    type: string
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        LastTransitionTime is the last time this condition transitioned from one
+                        status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A Message containing details about this condition's last transition from
+                        one status to another, if any.
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        ObservedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      type: integer
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: |-
+                        Type of this condition. At most one of each condition type may apply to
+                        a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              observedGeneration:
+                description: |-
+                  ObservedGeneration is the latest metadata.generation
+                  which resulted in either a ready state, or stalled due to error
+                  it can not recover from without human intervention.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

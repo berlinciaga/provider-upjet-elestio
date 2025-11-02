@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 The Crossplane Authors <https://crossplane.io>
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package v1alpha1
 
 import (
@@ -7,7 +11,7 @@ import (
 
 // Package type metadata.
 const (
-	Group   = "."
+	Group   = "elestio.crossplane.io"
 	Version = "v1alpha1"
 )
 
@@ -18,5 +22,3 @@ var (
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	SchemeBuilder = &scheme.Builder{GroupVersion: SchemeGroupVersion}
 )
-
-func init() {}
