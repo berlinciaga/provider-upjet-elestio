@@ -9,7 +9,6 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
-	providerconfig "github.com/berlinciaga/provider-upjet-elestio/internal/controller/cluster/providerconfig"
 	service "github.com/berlinciaga/provider-upjet-elestio/internal/controller/cluster/service/service"
 )
 
@@ -17,7 +16,6 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		providerconfig.Setup,
 		service.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
@@ -31,7 +29,6 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		providerconfig.SetupGated,
 		service.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {
