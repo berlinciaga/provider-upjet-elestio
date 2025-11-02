@@ -11,7 +11,6 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/terraform"
 
-	clusterv1beta1 "github.com/berlinciaga/provider-upjet-elestio/apis/cluster/v1beta1"
 	namespacedv1beta1 "github.com/berlinciaga/provider-upjet-elestio/apis/namespaced/v1beta1"
 )
 
@@ -74,47 +73,13 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 	}
 }
 
-func toSharedPCSpec(pc *clusterv1beta1.ProviderConfig) (*namespacedv1beta1.ProviderConfigSpec, error) {
-	if pc == nil {
-		return nil, nil
-	}
-	data, err := json.Marshal(pc.Spec)
-	if err != nil {
-		return nil, err
-	}
-
-	var mSpec namespacedv1beta1.ProviderConfigSpec
-	err = json.Unmarshal(data, &mSpec)
-	return &mSpec, err
-}
-
 func resolveProviderConfig(ctx context.Context, crClient client.Client, mg resource.Managed) (*namespacedv1beta1.ProviderConfigSpec, error) {
-	switch managed := mg.(type) {
-	case resource.LegacyManaged:
-		return resolveLegacy(ctx, crClient, managed)
-	case resource.ModernManaged:
-		return resolveModern(ctx, crClient, managed)
-	default:
-		return nil, errors.New("resource is not a managed resource")
+	// Modern managed resources are the only supported approach
+	modernMg, ok := mg.(resource.ModernManaged)
+	if !ok {
+		return nil, errors.New("resource must be a modern managed resource")
 	}
-}
-
-func resolveLegacy(ctx context.Context, client client.Client, mg resource.LegacyManaged) (*namespacedv1beta1.ProviderConfigSpec, error) {
-	configRef := mg.GetProviderConfigReference()
-	if configRef == nil {
-		return nil, errors.New(errNoProviderConfig)
-	}
-	pc := &clusterv1beta1.ProviderConfig{}
-	if err := client.Get(ctx, types.NamespacedName{Name: configRef.Name}, pc); err != nil {
-		return nil, errors.Wrap(err, errGetProviderConfig)
-	}
-
-	t := resource.NewLegacyProviderConfigUsageTracker(client, &clusterv1beta1.ProviderConfigUsage{})
-	if err := t.Track(ctx, mg); err != nil {
-		return nil, errors.Wrap(err, errTrackUsage)
-	}
-
-	return toSharedPCSpec(pc)
+	return resolveModern(ctx, crClient, modernMg)
 }
 
 func resolveModern(ctx context.Context, crClient client.Client, mg resource.ModernManaged) (*namespacedv1beta1.ProviderConfigSpec, error) {
