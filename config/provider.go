@@ -5,6 +5,8 @@ import (
 	_ "embed"
 
 	ujconfig "github.com/crossplane/upjet/v2/pkg/config"
+
+	"github.com/berlinciaga/provider-upjet-elestio/config/service"
 )
 
 const (
@@ -29,7 +31,7 @@ func GetProvider() *ujconfig.Provider {
 		))
 
 	for _, configure := range []func(provider *ujconfig.Provider){
-		// add custom config functions here later
+		service.Configure,
 	} {
 		configure(pc)
 	}
@@ -52,7 +54,7 @@ func GetProviderNamespaced() *ujconfig.Provider {
 		}))
 
 	for _, configure := range []func(provider *ujconfig.Provider){
-		// add custom config functions here later
+		service.Configure,
 	} {
 		configure(pc)
 	}
