@@ -23,7 +23,7 @@ var providerMetadata string
 // GetProvider returns provider configuration
 func GetProvider() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("."),
+		ujconfig.WithRootGroup("elestio.crossplane.io"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(
@@ -43,7 +43,7 @@ func GetProvider() *ujconfig.Provider {
 // GetProviderNamespaced returns the namespaced provider configuration
 func GetProviderNamespaced() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup(".m."),
+		ujconfig.WithRootGroup("elestio.crossplane.io.m"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(

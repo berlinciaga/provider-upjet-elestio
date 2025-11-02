@@ -3,7 +3,6 @@ module github.com/berlinciaga/provider-upjet-elestio
 go 1.24.7
 
 require (
-	dario.cat/mergo v1.0.2
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/crossplane/crossplane-runtime/v2 v2.0.0
 	github.com/crossplane/crossplane-tools v0.0.0-20250731192036-00d407d8b7ec
@@ -19,6 +18,7 @@ require (
 )
 
 require (
+	dario.cat/mergo v1.0.2 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/antchfx/htmlquery v1.2.4 // indirect
@@ -131,3 +131,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.6.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+replace github.com/berlinciaga/provider-upjet-elestio => ./
