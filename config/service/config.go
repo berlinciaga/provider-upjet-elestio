@@ -21,6 +21,37 @@ func Configure(p *config.Provider) {
 			delete(r.TerraformResource.Schema, field)
 		}
 
-		// Note: We'll add sensitive fields and references in later steps
+		// Configure sensitive fields to be stored in connection secrets
+		r.Sensitive.AdditionalConnectionDetailsFn = func(attr map[string]any) (map[string][]byte, error) {
+			conn := map[string][]byte{}
+
+			// Add IPv4 address if available
+			if ipv4, ok := attr["ipv4"].(string); ok && ipv4 != "" {
+				conn["ipv4"] = []byte(ipv4)
+			}
+
+			// Add IPv6 address if available
+			if ipv6, ok := attr["ipv6"].(string); ok && ipv6 != "" {
+				conn["ipv6"] = []byte(ipv6)
+			}
+
+			// Add CNAME if available
+			if cname, ok := attr["cname"].(string); ok && cname != "" {
+				conn["cname"] = []byte(cname)
+				conn["endpoint"] = []byte(cname) // Also expose as generic endpoint
+			}
+
+			// Add admin email if available
+			if adminEmail, ok := attr["admin_email"].(string); ok && adminEmail != "" {
+				conn["admin_email"] = []byte(adminEmail)
+			}
+
+			// Add admin user if available
+			if adminUser, ok := attr["admin_user"].(string); ok && adminUser != "" {
+				conn["admin_user"] = []byte(adminUser)
+			}
+
+			return conn, nil
+		}
 	})
 }
