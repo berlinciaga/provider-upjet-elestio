@@ -12,7 +12,6 @@ import (
 
 	v1alpha1 "github.com/berlinciaga/provider-upjet-elestio/apis/cluster/service/v1alpha1"
 	v1alpha1cluster "github.com/berlinciaga/provider-upjet-elestio/apis/cluster/v1alpha1"
-	v1beta1 "github.com/berlinciaga/provider-upjet-elestio/apis/cluster/v1beta1"
 )
 
 func init() {
@@ -20,7 +19,6 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1cluster.SchemeBuilder.AddToScheme,
-		v1beta1.SchemeBuilder.AddToScheme,
 	)
 }
 
