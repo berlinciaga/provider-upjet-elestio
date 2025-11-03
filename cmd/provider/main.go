@@ -35,11 +35,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	apisCluster "github.com/berlinciaga/provider-upjet-elestio/apis/cluster"
-	apisNamespaced "github.com/berlinciaga/provider-upjet-elestio/apis/namespaced"
+// 	apisNamespaced "github.com/berlinciaga/provider-upjet-elestio/apis/namespaced"
 	"github.com/berlinciaga/provider-upjet-elestio/config"
 	"github.com/berlinciaga/provider-upjet-elestio/internal/clients"
 	controllerCluster "github.com/berlinciaga/provider-upjet-elestio/internal/controller/cluster"
-	controllerNamespaced "github.com/berlinciaga/provider-upjet-elestio/internal/controller/namespaced"
+// 	controllerNamespaced "github.com/berlinciaga/provider-upjet-elestio/internal/controller/namespaced"
 	"github.com/berlinciaga/provider-upjet-elestio/internal/features"
 	"github.com/berlinciaga/provider-upjet-elestio/internal/version"
 )
@@ -139,7 +139,7 @@ func main() {
 	})
 	kingpin.FatalIfError(err, "Cannot create controller manager")
 	kingpin.FatalIfError(apisCluster.AddToScheme(mgr.GetScheme()), "Cannot add cluster-scoped  APIs to scheme")
-	kingpin.FatalIfError(apisNamespaced.AddToScheme(mgr.GetScheme()), "Cannot add namespaced  APIs to scheme")
+// 	kingpin.FatalIfError(apisNamespaced.AddToScheme(mgr.GetScheme()), "Cannot add namespaced  APIs to scheme")
 	kingpin.FatalIfError(apiextensionsv1.AddToScheme(mgr.GetScheme()), "Cannot add api-extensions APIs to scheme")
 	kingpin.FatalIfError(authv1.AddToScheme(mgr.GetScheme()), "Cannot add k8s authorization APIs to scheme")
 
@@ -226,11 +226,11 @@ func main() {
 			MaxConcurrentReconciles: 1,
 		}), "Cannot setup CRD gate")
 		kingpin.FatalIfError(controllerCluster.SetupGated(mgr, clusterOpts), "Cannot setup cluster-scoped  controllers")
-		kingpin.FatalIfError(controllerNamespaced.SetupGated(mgr, namespacedOpts), "Cannot setup namespaced  controllers")
+// 		kingpin.FatalIfError(controllerNamespaced.SetupGated(mgr, namespacedOpts), "Cannot setup namespaced  controllers")
 	} else {
 		log.Info("Provider has missing RBAC permissions for watching CRDs, controller SafeStart capability will be disabled")
 		kingpin.FatalIfError(controllerCluster.Setup(mgr, clusterOpts), "Cannot setup cluster-scoped  controllers")
-		kingpin.FatalIfError(controllerNamespaced.Setup(mgr, namespacedOpts), "Cannot setup namespaced  controllers")
+// 		kingpin.FatalIfError(controllerNamespaced.Setup(mgr, namespacedOpts), "Cannot setup namespaced  controllers")
 	}
 
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
