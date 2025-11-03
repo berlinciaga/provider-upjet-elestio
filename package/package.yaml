@@ -6,7 +6,7 @@ spec:
   capabilities:
     - SafeStart
   controller:
-    image: "dp-dockerregistry-u27966.vm.elestio.app/provider-upjet-elestio-controller:v0.0.0-32"
+    image: "dp-dockerregistry-u27966.vm.elestio.app/provider-upjet-elestio-controller:v0.0.0-33"
     permissionRequests:
       - apiGroups:
           - ""
