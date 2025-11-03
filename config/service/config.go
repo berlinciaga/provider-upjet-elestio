@@ -14,9 +14,9 @@ func Configure(p *config.Provider) {
 		r.Kind = "Service"
 
 		// Skip fields that Upjet cannot convert due to type issues
-		// These fields have nested_type without a top-level type which causes conversion errors
-		// Workaround: We'll handle these fields separately or use alternative API fields
-		fieldsToSkip := []string{"admin", "database_admin", "ssh_keys", "ssh_public_keys"}
+		// These fields have nested_type without a top-level type or dynamic types which causes conversion errors
+		// local_field and local_field_sensitive have "type": "dynamic" (DynamicPseudoType) which Upjet cannot convert
+		fieldsToSkip := []string{"admin", "database_admin", "ssh_keys", "ssh_public_keys", "local_field", "local_field_sensitive"}
 		for _, field := range fieldsToSkip {
 			delete(r.TerraformResource.Schema, field)
 		}
