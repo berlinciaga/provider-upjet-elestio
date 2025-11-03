@@ -5,3 +5,19 @@ metadata:
 spec:
   capabilities:
     - SafeStart
+  controller:
+    image: ""
+    permissionRequests:
+      - apiGroups:
+          - ""
+        resources:
+          - events
+        verbs:
+          - "*"
+    config:
+      args:
+        - --poll=1m
+        - --max-reconcile-rate=100
+        - --terraform-version=1.5.7
+        - --terraform-provider-source=elestio/elestio
+        - --terraform-provider-version=0.24.0
